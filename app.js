@@ -1,3 +1,80 @@
+/* ---------- Analytics: Umami + Microsoft Clarity + Cloudflare Web Analytics ----------
+   Owner opt-out (per browser/device): open any page with ?notrack  -> your visits are no longer counted.
+   Re-enable on that browser:          open any page with ?track
+   Scripts load asynchronously after the page, so they never block rendering. */
+(function () {
+  'use strict';
+  var KEY = 'ya_notrack';
+  var ls = null;
+  try { ls = window.localStorage; } catch (e) {}
+
+  var params = location.search;
+  try {
+    if (/[?&]notrack(=|&|$)/.test(params)) {
+      ls.setItem(KEY, '1');
+      ls.setItem('umami.disabled', '1');
+      window.alert('Analytics disabled for this browser. Your visits will not be counted.');
+    } else if (/[?&]track(=|&|$)/.test(params)) {
+      ls.removeItem(KEY);
+      ls.removeItem('umami.disabled');
+      window.alert('Analytics re-enabled for this browser.');
+    }
+  } catch (e) {}
+
+  var off = false;
+  try { off = !!ls && ls.getItem(KEY) === '1'; } catch (e) {}
+  if (location.hostname !== 'alyousfiyaser-cmd.github.io') off = true; // ignore local previews/copies
+  if (off || navigator.webdriver) return;
+
+  function addScript(src, attrs) {
+    var s = document.createElement('script');
+    s.src = src;
+    s.async = true;
+    for (var k in attrs) if (Object.prototype.hasOwnProperty.call(attrs, k)) s.setAttribute(k, attrs[k]);
+    document.head.appendChild(s);
+  }
+
+  // Umami: visitors, cities, sources, devices, pages, engagement, events
+  addScript('https://cloud.umami.is/script.js', {
+    'data-website-id': 'aa7e9429-11aa-4e65-8485-d476adf0ce00',
+    'data-domains': 'alyousfiyaser-cmd.github.io'
+  });
+
+  // Cloudflare Web Analytics: page speed and Core Web Vitals
+  addScript('https://static.cloudflareinsights.com/beacon.min.js', {
+    'data-cf-beacon': '{"token": "8737827fb86f46c8be4f9c052a1cf99b"}'
+  });
+
+  // Microsoft Clarity: heatmaps, scroll depth, masked recordings, JS errors
+  (function (c, l, a, r, i, t, y) {
+    c[a] = c[a] || function () { (c[a].q = c[a].q || []).push(arguments); };
+    t = l.createElement(r); t.async = 1; t.src = 'https://www.clarity.ms/tag/' + i;
+    y = l.getElementsByTagName(r)[0]; y.parentNode.insertBefore(t, y);
+  })(window, document, 'clarity', 'script', 'z7h8xb0s3p');
+
+  // Interaction events in Umami: outbound links, email/phone clicks, downloads
+  document.addEventListener('click', function (e) {
+    var a = e.target && e.target.closest ? e.target.closest('a[href]') : null;
+    if (!a || !window.umami || typeof window.umami.track !== 'function') return;
+    var href = a.getAttribute('href') || '';
+    var name = null, data = {};
+    if (/^mailto:/i.test(href)) { name = 'email-click'; }
+    else if (/^tel:/i.test(href)) { name = 'phone-click'; }
+    else {
+      var url;
+      try { url = new URL(a.href, location.href); } catch (err) { return; }
+      if (a.hasAttribute('download') || /\.(pdf|docx?|xlsx?|pptx?|zip|vcf)$/i.test(url.pathname)) {
+        name = 'download'; data.file = url.pathname.split('/').pop();
+      } else if (url.origin !== location.origin && /^https?:$/.test(url.protocol)) {
+        name = 'outbound-link'; data.url = url.hostname + url.pathname;
+      }
+    }
+    if (!name) return;
+    data.page = location.pathname;
+    try { window.umami.track(name, data); } catch (err) {}
+  }, true);
+})();
+
 /* Yaser Alyousfi — Executive Personal Profile
    Navigation, reveal-on-scroll, and page transition fallback. */
 (function () {
