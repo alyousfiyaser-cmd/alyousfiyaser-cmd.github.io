@@ -49,7 +49,9 @@
   // Umami: visitors, cities, sources, devices, pages, engagement, events
   addScript('https://cloud.umami.is/script.js', {
     'data-website-id': 'aa7e9429-11aa-4e65-8485-d476adf0ce00',
-    'data-domains': 'alyousfiyaser-cmd.github.io'
+    'data-domains': 'alyousfiyaser-cmd.github.io',
+    'data-performance': 'true',
+    'data-errors': 'true'
   });
 
   // Cloudflare Web Analytics: page speed and Core Web Vitals
