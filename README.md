@@ -92,3 +92,8 @@ put the `.woff2` files beside these files, add `@font-face` rules at the top of
 Colors, spacing, and fonts are all CSS custom properties defined in `:root` at the
 top of `styles.css` — change a token there and it updates across every page.
 Light (cream) sections simply re-declare those same tokens inside `.section--light`.
+
+## Analytics
+
+Tracking is loaded from `app.js` (Umami, Microsoft Clarity, Cloudflare Web Analytics).
+To exclude your own visits on a device/browser, open any page with `?notrack`; to undo, use `?track`.
