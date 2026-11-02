@@ -8,16 +8,28 @@
   var ls = null;
   try { ls = window.localStorage; } catch (e) {}
 
+  function note(msg) {
+    function show() {
+      var n = document.createElement('div');
+      n.textContent = msg;
+      n.setAttribute('role', 'status');
+      n.style.cssText = 'position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:99999;background:#111;color:#fff;padding:12px 18px;border-radius:10px;font:14px/1.4 system-ui,sans-serif;box-shadow:0 8px 30px rgba(0,0,0,.4);max-width:90vw;text-align:center';
+      document.body.appendChild(n);
+      setTimeout(function () { n.remove(); }, 5000);
+    }
+    if (document.body) show(); else document.addEventListener('DOMContentLoaded', show);
+  }
+
   var params = location.search;
   try {
     if (/[?&]notrack(=|&|$)/.test(params)) {
       ls.setItem(KEY, '1');
       ls.setItem('umami.disabled', '1');
-      window.alert('Analytics disabled for this browser. Your visits will not be counted.');
+      note('Analytics disabled for this browser. Your visits will not be counted.');
     } else if (/[?&]track(=|&|$)/.test(params)) {
       ls.removeItem(KEY);
       ls.removeItem('umami.disabled');
-      window.alert('Analytics re-enabled for this browser.');
+      note('Analytics re-enabled for this browser.');
     }
   } catch (e) {}
 
